@@ -31,7 +31,7 @@ class AudioService:
         text: str,
         lang: str = "en",
         tld: str = "co.uk",  # British English accent
-    ) -> Tuple[str, float]:
+    ) -> Tuple[str, int]:
         """
         Generate audio using Google TTS with British accent.
 
@@ -78,14 +78,14 @@ class AudioService:
 
         await asyncio.to_thread(sync_generate)
 
-    async def _get_duration(self, file_path: str) -> float:
-        """Get audio duration using pydub."""
+    async def _get_duration(self, file_path: str) -> int:
+        """Get audio duration in whole seconds using pydub."""
         def load():
             try:
                 audio = AudioSegment.from_mp3(file_path)
-                return round(len(audio) / 1000.0, 2)
+                return round(len(audio) / 1000.0)  # Round to nearest whole second
             except Exception:
-                return 0.0
+                return 0
 
         return await asyncio.to_thread(load)
 

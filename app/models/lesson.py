@@ -50,7 +50,7 @@ class Lesson(Base):
 
     # Audio
     audio_path: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
-    audio_duration: Mapped[Optional[float]] = mapped_column(Float, nullable=True)  # in seconds
+    audio_duration: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)  # in seconds
 
     # Progress tracking
     is_completed: Mapped[bool] = mapped_column(Boolean, default=False)
