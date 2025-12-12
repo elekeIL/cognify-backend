@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+html { background: #ffffff; }
+body {
+  width: 720pt; height: 405pt; margin: 0; padding: 0;
+  background: #FFFFFF; font-family: Arial, sans-serif;
+  display: flex; flex-direction: column;
+}
+.header {
+  background: #1C2833;
+  padding: 20pt 30pt;
+}
+.header h1 {
+  color: #FFFFFF;
+  font-size: 28pt;
+  margin: 0;
+  font-weight: bold;
+}
+.header-accent {
+  width: 60pt;
+  height: 4pt;
+  background: #E74C3C;
+  margin-top: 8pt;
+}
+.content {
+  flex: 1;
+  display: flex;
+  padding: 20pt 30pt;
+  gap: 20pt;
+}
+.col {
+  flex: 1;
+}
+h2 {
+  color: #1C2833;
+  font-size: 14pt;
+  margin: 0 0 10pt 0;
+  font-weight: bold;
+}
+.stack-item {
+  display: flex;
+  margin-bottom: 6pt;
+  align-items: center;
+}
+.stack-label {
+  background: #2E4053;
+  color: #FFFFFF;
+  padding: 4pt 8pt;
+  font-size: 9pt;
+  width: 70pt;
+  text-align: center;
+}
+.stack-label p {
+  margin: 0;
+  font-weight: bold;
+}
+.stack-value {
+  background: #F4F6F6;
+  padding: 4pt 8pt;
+  flex: 1;
+}
+.stack-value p {
+  color: #1C2833;
+  font-size: 9pt;
+  margin: 0;
+}
+.exceeds {
+  background: #D5F5E3;
+  border-left: 3pt solid #27AE60;
+  padding: 8pt;
+  margin-top: 10pt;
+}
+.exceeds h3 {
+  color: #1C2833;
+  font-size: 11pt;
+  margin: 0 0 6pt 0;
+  font-weight: bold;
+}
+.exceeds p {
+  color: #2E4053;
+  font-size: 9pt;
+  margin: 0 0 3pt 0;
+}
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>Technology Stack</h1>
+  <div class="header-accent"></div>
+</div>
+<div class="content">
+  <div class="col">
+    <h2>Backend</h2>
+    <div class="stack-item">
+      <div class="stack-label"><p>Framework</p></div>
+      <div class="stack-value"><p>FastAPI - Async performance, OpenAPI docs</p></div>
+    </div>
+    <div class="stack-item">
+      <div class="stack-label"><p>Database</p></div>
+      <div class="stack-value"><p>SQLite + aiosqlite - Zero-config, async</p></div>
+    </div>
+    <div class="stack-item">
+      <div class="stack-label"><p>ORM</p></div>
+      <div class="stack-value"><p>SQLAlchemy 2.0 - PostgreSQL-ready</p></div>
+    </div>
+    <div class="stack-item">
+      <div class="stack-label"><p>Auth</p></div>
+      <div class="stack-value"><p>JWT (python-jose) - Token rotation</p></div>
+    </div>
+    <h2>AI / Processing</h2>
+    <div class="stack-item">
+      <div class="stack-label"><p>LLM</p></div>
+      <div class="stack-value"><p>OpenAI GPT-4o - Structured JSON output</p></div>
+    </div>
+    <div class="stack-item">
+      <div class="stack-label"><p>TTS</p></div>
+      <div class="stack-value"><p>gTTS - Free, reliable, British English</p></div>
+    </div>
+    <div class="stack-item">
+      <div class="stack-label"><p>PDF</p></div>
+      <div class="stack-value"><p>PyMuPDF (fitz) - Fast extraction</p></div>
+    </div>
+    <div class="stack-item">
+      <div class="stack-label"><p>DOCX</p></div>
+      <div class="stack-value"><p>python-docx - Tables + paragraphs</p></div>
+    </div>
+  </div>
+  <div class="col">
+    <h2>Frontend</h2>
+    <div class="stack-item">
+      <div class="stack-label"><p>Framework</p></div>
+      <div class="stack-value"><p>Next.js 14 - App Router, SSR/CSR</p></div>
+    </div>
+    <div class="stack-item">
+      <div class="stack-label"><p>Styling</p></div>
+      <div class="stack-value"><p>Tailwind CSS - Utility-first, rapid dev</p></div>
+    </div>
+    <div class="stack-item">
+      <div class="stack-label"><p>State</p></div>
+      <div class="stack-value"><p>React Context - Simple, sufficient</p></div>
+    </div>
+    <div class="stack-item">
+      <div class="stack-label"><p>Animation</p></div>
+      <div class="stack-value"><p>Framer Motion - Smooth, professional</p></div>
+    </div>
+    <div class="exceeds">
+      <h3>Exceeds Requirements</h3>
+      <p>3 file types (PDF, DOCX, TXT) - req was 2</p>
+      <p>Learning outcomes with audio auto-completion</p>
+      <p>Full activity history and notifications</p>
+      <p>Multi-language UI (EN, ES, FR, DE)</p>
+      <p>Dark mode support throughout</p>
+    </div>
+  </div>
+</div>
+</body>
+</html>

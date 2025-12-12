@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+html { background: #ffffff; }
+body {
+  width: 720pt; height: 405pt; margin: 0; padding: 0;
+  background: #FFFFFF; font-family: Arial, sans-serif;
+  display: flex; flex-direction: column;
+}
+.header {
+  background: #1C2833;
+  padding: 20pt 30pt;
+}
+.header h1 {
+  color: #FFFFFF;
+  font-size: 28pt;
+  margin: 0;
+  font-weight: bold;
+}
+.header-accent {
+  width: 60pt;
+  height: 4pt;
+  background: #E74C3C;
+  margin-top: 8pt;
+}
+.content {
+  flex: 1;
+  display: flex;
+  padding: 20pt 30pt;
+  gap: 20pt;
+}
+.col {
+  flex: 1;
+}
+h2 {
+  color: #1C2833;
+  font-size: 14pt;
+  margin: 0 0 10pt 0;
+  font-weight: bold;
+}
+.risk-row {
+  display: flex;
+  margin-bottom: 6pt;
+  font-size: 9pt;
+}
+.risk-label {
+  background: #FADBD8;
+  color: #1C2833;
+  padding: 4pt 6pt;
+  width: 90pt;
+  font-weight: bold;
+}
+.risk-label p {
+  margin: 0;
+}
+.risk-mitigation {
+  background: #D5F5E3;
+  color: #1C2833;
+  padding: 4pt 6pt;
+  flex: 1;
+}
+.risk-mitigation p {
+  margin: 0;
+}
+.roadmap-item {
+  display: flex;
+  margin-bottom: 6pt;
+  align-items: center;
+}
+.roadmap-phase {
+  background: #2E4053;
+  color: #FFFFFF;
+  padding: 4pt 8pt;
+  font-size: 9pt;
+  width: 40pt;
+  text-align: center;
+  font-weight: bold;
+}
+.roadmap-phase p {
+  margin: 0;
+}
+.roadmap-features {
+  background: #F4F6F6;
+  padding: 4pt 8pt;
+  flex: 1;
+}
+.roadmap-features p {
+  color: #1C2833;
+  font-size: 9pt;
+  margin: 0;
+}
+.eval-box {
+  background: #1C2833;
+  padding: 12pt;
+  margin-top: 10pt;
+}
+.eval-box h3 {
+  color: #E74C3C;
+  font-size: 11pt;
+  margin: 0 0 8pt 0;
+  font-weight: bold;
+}
+.eval-row {
+  display: flex;
+  margin-bottom: 4pt;
+}
+.eval-criteria {
+  color: #AAB7B8;
+  font-size: 9pt;
+  width: 140pt;
+}
+.eval-criteria p {
+  margin: 0;
+}
+.eval-score {
+  color: #FFFFFF;
+  font-size: 9pt;
+  flex: 1;
+}
+.eval-score p {
+  margin: 0;
+}
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>Risks, Roadmap, and Evaluation</h1>
+  <div class="header-accent"></div>
+</div>
+<div class="content">
+  <div class="col">
+    <h2>Risks and Mitigations</h2>
+    <div class="risk-row">
+      <div class="risk-label"><p>OpenAI rate limits</p></div>
+      <div class="risk-mitigation"><p>Exponential backoff, 3 retries</p></div>
+    </div>
+    <div class="risk-row">
+      <div class="risk-label"><p>gTTS network dep</p></div>
+      <div class="risk-mitigation"><p>Retry logic, edge-tts fallback ready</p></div>
+    </div>
+    <div class="risk-row">
+      <div class="risk-label"><p>SQLite contention</p></div>
+      <div class="risk-mitigation"><p>PostgreSQL migration path ready</p></div>
+    </div>
+    <div class="risk-row">
+      <div class="risk-label"><p>Large documents</p></div>
+      <div class="risk-mitigation"><p>Content truncated to 12K chars</p></div>
+    </div>
+    <h2>Roadmap</h2>
+    <div class="roadmap-item">
+      <div class="roadmap-phase"><p>v1.1</p></div>
+      <div class="roadmap-features"><p>Premium TTS voices, quiz generation</p></div>
+    </div>
+    <div class="roadmap-item">
+      <div class="roadmap-phase"><p>v1.2</p></div>
+      <div class="roadmap-features"><p>PostgreSQL, S3 storage, deployment</p></div>
+    </div>
+    <div class="roadmap-item">
+      <div class="roadmap-phase"><p>v2.0</p></div>
+      <div class="roadmap-features"><p>Multi-language lessons, collaboration</p></div>
+    </div>
+    <div class="roadmap-item">
+      <div class="roadmap-phase"><p>v3.0</p></div>
+      <div class="roadmap-features"><p>Analytics dashboard, API access</p></div>
+    </div>
+  </div>
+  <div class="col">
+    <h2>Security Highlights</h2>
+    <div class="risk-row">
+      <div class="risk-label"><p>File validation</p></div>
+      <div class="risk-mitigation"><p>MIME type prevents spoofing</p></div>
+    </div>
+    <div class="risk-row">
+      <div class="risk-label"><p>Data isolation</p></div>
+      <div class="risk-mitigation"><p>All queries filtered by user_id</p></div>
+    </div>
+    <div class="risk-row">
+      <div class="risk-label"><p>JWT tokens</p></div>
+      <div class="risk-mitigation"><p>30-min expiration, rotation</p></div>
+    </div>
+    <div class="risk-row">
+      <div class="risk-label"><p>Passwords</p></div>
+      <div class="risk-mitigation"><p>bcrypt hashing</p></div>
+    </div>
+    <div class="eval-box">
+      <h3>Evaluation Criteria Mapping</h3>
+      <div class="eval-row">
+        <div class="eval-criteria"><p>Product UX (20%)</p></div>
+        <div class="eval-score"><p>Dashboard, progress, audio player</p></div>
+      </div>
+      <div class="eval-row">
+        <div class="eval-criteria"><p>Correctness (25%)</p></div>
+        <div class="eval-score"><p>Step retry, citation validation, MIME</p></div>
+      </div>
+      <div class="eval-row">
+        <div class="eval-criteria"><p>Code quality (20%)</p></div>
+        <div class="eval-score"><p>Service pattern, Pydantic, TypeScript</p></div>
+      </div>
+      <div class="eval-row">
+        <div class="eval-criteria"><p>Architecture (20%)</p></div>
+        <div class="eval-score"><p>Documented decisions, scalability</p></div>
+      </div>
+      <div class="eval-row">
+        <div class="eval-criteria"><p>Docs (15%)</p></div>
+        <div class="eval-score"><p>Architecture, BRS, FRS, Slides</p></div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

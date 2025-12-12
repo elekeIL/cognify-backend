@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dir \"C:\\jcodes1\\dev\\catalytzu-assessment\\cognify-backend\\docs\")",
+      "Bash(dir:*)",
+      "Bash(python -c:*)",
+      "Bash(del \"C:\\jcodes1\\dev\\catalytzu-assessment\\cognify-backend\\cognify.db\")",
+      "Bash(pip install:*)",
+      "Bash(pip show:*)",
+      "Bash(where:*)",
+      "Bash(python -m pip install:*)",
+      "Bash(.venvScriptspython.exe -m pip list)",
+      "Bash(findstr:*)",
+      "Bash(.venvScriptspython.exe -m pytest tests/test_services.py -v --tb=short)",
+      "Bash(wc:*)",
+      "Bash(.venvScriptspython.exe -m pytest tests/test_services.py -v --tb=short -k \"CriticalPath\")"
+    ]
+  }
+}
