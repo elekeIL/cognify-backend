@@ -11,8 +11,8 @@ class Settings(BaseSettings):
 
     # Application
     app_name: str = "Cognify API"
-    app_env: str = "development"
-    debug: bool = True
+    app_env: str = "production"
+    debug: bool = False
 
     # Server
     host: str = "0.0.0.0"

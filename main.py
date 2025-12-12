@@ -19,14 +19,23 @@ from app.api.routes import api_router
 # ─────────────────────────────────────────────────────────────
 # Logging Setup
 # ─────────────────────────────────────────────────────────────
+settings = get_settings()
+
+# Set log level based on environment
+log_level = logging.DEBUG if settings.debug else logging.INFO
+
 logging.basicConfig(
-    level=logging.DEBUG,
+    level=log_level,
     format="%(asctime)s | %(levelname)-8s | %(message)s",
     datefmt="%H:%M:%S",
 )
 logger = logging.getLogger("cognify")
 
-settings = get_settings()
+# Suppress verbose SQLAlchemy logs in production
+if not settings.debug:
+    logging.getLogger("sqlalchemy.engine").setLevel(logging.WARNING)
+    logging.getLogger("sqlalchemy.pool").setLevel(logging.WARNING)
+    logging.getLogger("aiosqlite").setLevel(logging.WARNING)
 
 
 # ─────────────────────────────────────────────────────────────
@@ -60,10 +69,9 @@ async def lifespan(app: FastAPI):
     os.makedirs(settings.upload_dir, exist_ok=True)
     os.makedirs(settings.audio_output_dir, exist_ok=True)
 
-    # Initialize DB tables (only in dev — remove in prod if using Alembic)
-    if settings.environment == "development":
-        await init_db()
-        print("Database tables ensured (dev mode)")
+    # Initialize DB tables (auto-creates if not using Alembic migrations)
+    await init_db()
+    logger.info("Database tables initialized")
 
     print("Application startup complete")
     yield
