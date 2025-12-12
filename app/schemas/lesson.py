@@ -23,7 +23,7 @@ class LessonResponse(LessonBase):
     id: str
     document_id: str
     audio_path: Optional[str] = None
-    audio_duration: Optional[int] = None
+    audio_duration: Optional[float] = None  # Duration in seconds (can be fractional)
     is_completed: bool = False
     progress_percentage: float = 0.0
     audio_position: int = 0
