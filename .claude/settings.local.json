@@ -13,7 +13,10 @@
       "Bash(findstr:*)",
       "Bash(.venvScriptspython.exe -m pytest tests/test_services.py -v --tb=short)",
       "Bash(wc:*)",
-      "Bash(.venvScriptspython.exe -m pytest tests/test_services.py -v --tb=short -k \"CriticalPath\")"
+      "Bash(.venvScriptspython.exe -m pytest tests/test_services.py -v --tb=short -k \"CriticalPath\")",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push)"
     ]
   }
 }
