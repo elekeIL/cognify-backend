@@ -46,6 +46,14 @@ class Settings(BaseSettings):
     # Base URL (for generating audio URLs etc.) - set via BASE_URL env var in production
     base_url: str = "http://localhost:8000"
 
+    # Cloudflare R2 Storage (S3-compatible)
+    # Leave empty to use local storage (development)
+    r2_account_id: str = ""
+    r2_access_key_id: str = ""
+    r2_secret_access_key: str = ""
+    r2_bucket_name: str = ""
+    r2_public_url: str = ""  # Custom domain or R2.dev URL for public access
+
     @property
     def effective_base_url(self) -> str:
         """Get base URL, constructing from host/port if not explicitly set."""

@@ -10,6 +10,7 @@ from gtts import gTTS
 from pydub import AudioSegment
 
 from app.core.config import get_settings
+from app.services.storage_service import get_storage_service
 
 logger = logging.getLogger(__name__)
 settings = get_settings()
@@ -25,6 +26,7 @@ class AudioService:
     def __init__(self):
         self.output_dir = Path(settings.audio_output_dir)
         self.output_dir.mkdir(parents=True, exist_ok=True)
+        self.storage = get_storage_service()
 
     async def generate_audio(
         self,
@@ -41,10 +43,10 @@ class AudioService:
             tld: Top-level domain for accent (co.uk = British)
 
         Returns:
-            Tuple of (file_path, duration_seconds)
+            Tuple of (public_url_or_path, duration_seconds)
         """
         filename = f"narration_{uuid.uuid4().hex[:12]}.mp3"
-        file_path = self.output_dir / filename
+        local_file_path = self.output_dir / filename
 
         last_error = None
         for attempt in range(MAX_RETRIES):
@@ -52,12 +54,25 @@ class AudioService:
                 logger.info(f"Generating audio ({len(text)} chars) - attempt {attempt + 1}/{MAX_RETRIES}")
 
                 # Generate audio in thread pool (gTTS is synchronous)
-                await self._generate_gtts(text, str(file_path), lang, tld)
+                await self._generate_gtts(text, str(local_file_path), lang, tld)
 
-                # Get duration
-                duration = await self._get_duration(str(file_path))
+                # Get duration before potentially uploading
+                duration = await self._get_duration(str(local_file_path))
                 logger.info(f"Audio generated: {filename} ({duration:.1f}s)")
-                return str(file_path), duration
+
+                # Upload to cloud storage (or keep local path)
+                success, url_or_path = await self.storage.upload_file(
+                    str(local_file_path),
+                    f"audio/{filename}",
+                    content_type="audio/mpeg"
+                )
+
+                if success:
+                    return url_or_path, duration
+                else:
+                    # Fallback to local path if upload fails
+                    logger.warning("Cloud upload failed, using local storage")
+                    return str(local_file_path), duration
 
             except Exception as e:
                 last_error = e
@@ -89,21 +104,16 @@ class AudioService:
 
         return await asyncio.to_thread(load)
 
-    async def delete_audio(self, file_path: str) -> bool:
-        """Delete an audio file from disk."""
+    async def delete_audio(self, file_path_or_url: str) -> bool:
+        """Delete an audio file from storage (cloud or local)."""
         try:
-            path = Path(file_path)
-            if path.exists():
-                path.unlink()
-                logger.info(f"Deleted audio file: {path.name}")
-                return True
+            return await self.storage.delete_file(file_path_or_url)
         except Exception as e:
             logger.warning(f"Failed to delete audio file: {e}")
         return False
 
-    def get_audio_url(self, file_path: str) -> Optional[str]:
+    def get_audio_url(self, file_path_or_url: str) -> Optional[str]:
         """Get the public URL for an audio file."""
-        if not file_path:
+        if not file_path_or_url:
             return None
-        filename = Path(file_path).name
-        return f"{settings.effective_base_url}/static/audio/{filename}"
+        return self.storage.get_public_url(file_path_or_url)
