@@ -5,6 +5,7 @@ Handles file uploads for audio files and documents.
 Falls back to local storage if R2 is not configured.
 """
 
+import asyncio
 import os
 import logging
 from pathlib import Path
@@ -89,8 +90,10 @@ class StorageService:
         destination_key: str,
         content_type: str
     ) -> Tuple[bool, str]:
-        """Upload file to Cloudflare R2."""
-        try:
+        """Upload file to Cloudflare R2 (non-blocking)."""
+
+        def sync_upload():
+            """Synchronous upload to run in thread pool."""
             with open(file_path, 'rb') as file_data:
                 self.s3_client.put_object(
                     Bucket=self.bucket_name,
@@ -98,6 +101,10 @@ class StorageService:
                     Body=file_data,
                     ContentType=content_type,
                 )
+
+        try:
+            # Run upload in thread pool to avoid blocking
+            await asyncio.to_thread(sync_upload)
 
             # Generate public URL
             if self.public_url_base:
@@ -108,7 +115,7 @@ class StorageService:
 
             logger.info(f"Uploaded to R2: {destination_key}")
 
-            # Optionally delete local file after upload
+            # Delete local file after successful upload
             try:
                 os.remove(file_path)
             except Exception:
