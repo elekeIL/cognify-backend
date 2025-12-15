@@ -8,6 +8,7 @@ from app.models.citation import Citation
 from app.models.activity import Activity, ActivityType
 from app.models.refresh_token import RefreshToken
 from app.models.notification import Notification, NotificationType
+from app.models.password_reset import PasswordResetOTP
 
 __all__ = [
     "User",
@@ -20,4 +21,5 @@ __all__ = [
     "RefreshToken",
     "Notification",
     "NotificationType",
+    "PasswordResetOTP",
 ]

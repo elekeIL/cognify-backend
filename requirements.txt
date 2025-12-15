@@ -38,6 +38,7 @@ gtts==2.5.3
 pydub==0.25.1
 pyttsx3==2.97
 edge-tts==6.1.12
+mutagen==1.47.0  # Fast MP3 metadata/duration reading
 
 # =============================================
 # Authentication & Security

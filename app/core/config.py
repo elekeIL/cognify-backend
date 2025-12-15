@@ -54,6 +54,20 @@ class Settings(BaseSettings):
     r2_bucket_name: str = ""
     r2_public_url: str = ""  # Custom domain or R2.dev URL for public access
 
+    # Email (SMTP) Configuration
+    # Leave empty to log emails to console (development)
+    smtp_host: str = ""
+    smtp_port: int = 587
+    smtp_user: str = ""
+    smtp_password: str = ""
+    smtp_from_email: str = "noreply@cognify.app"
+    smtp_from_name: str = "Cognify"
+    smtp_use_tls: bool = True  # Use STARTTLS (port 587), False for SSL (port 465)
+
+    # Password Reset Configuration
+    otp_expiry_minutes: int = 10
+    otp_max_attempts: int = 5
+
     @property
     def effective_base_url(self) -> str:
         """Get base URL, constructing from host/port if not explicitly set."""

@@ -90,15 +90,21 @@ class ActivityService:
         user_id: str,
         lesson_id: str,
         lesson_title: str,
+        document_id: str,
     ) -> Activity:
-        """Log lesson started activity."""
+        """Log lesson started activity.
+
+        Note: We store document_id as entity_id because the learning page
+        routes use document IDs (/learning/[documentId]).
+        """
         return await ActivityService.log_activity(
             db=db,
             user_id=user_id,
             activity_type=ActivityType.LESSON_STARTED,
             title=f"Started lesson: {lesson_title}",
             entity_type="lesson",
-            entity_id=lesson_id,
+            entity_id=document_id,  # Use document_id for navigation consistency
+            metadata={"lesson_id": lesson_id},  # Store lesson_id in metadata if needed
         )
 
     @staticmethod
@@ -107,15 +113,21 @@ class ActivityService:
         user_id: str,
         lesson_id: str,
         lesson_title: str,
+        document_id: str,
     ) -> Activity:
-        """Log lesson completion activity."""
+        """Log lesson completion activity.
+
+        Note: We store document_id as entity_id because the learning page
+        routes use document IDs (/learning/[documentId]).
+        """
         return await ActivityService.log_activity(
             db=db,
             user_id=user_id,
             activity_type=ActivityType.LESSON_COMPLETED,
             title=f"Completed lesson: {lesson_title}",
             entity_type="lesson",
-            entity_id=lesson_id,
+            entity_id=document_id,  # Use document_id for navigation consistency
+            metadata={"lesson_id": lesson_id},  # Store lesson_id in metadata if needed
         )
 
     @staticmethod

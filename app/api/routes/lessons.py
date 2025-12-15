@@ -196,6 +196,7 @@ async def get_lesson_by_document(
             user_id=current_user.id,
             lesson_id=lesson.id,
             lesson_title=lesson.title,
+            document_id=lesson.document_id,
         )
 
     # Update last accessed
@@ -259,7 +260,7 @@ async def update_lesson_progress(
 
     # Update progress fields
     if progress_data.progress_percentage is not None:
-        lesson.progress_percentage = progress_data.progress_percentage
+        lesson.progress_percentage = min(progress_data.progress_percentage, 100.0)
     if progress_data.audio_position is not None:
         lesson.audio_position = progress_data.audio_position
     if progress_data.time_spent_seconds is not None:
@@ -327,12 +328,30 @@ async def mark_lesson_complete(
     lesson.completed_at = datetime.now(timezone.utc)
     lesson.last_accessed_at = datetime.now(timezone.utc)
 
+    # Mark all learning outcomes as completed
+    try:
+        outcomes = json.loads(lesson.learning_outcomes or "[]")
+        if outcomes:
+            # Extract IDs from learning outcomes - they come from AI as objects with "id" field
+            # Format is typically "lo1", "lo2", etc. (1-indexed from AI)
+            all_completed = []
+            for i, outcome in enumerate(outcomes):
+                if isinstance(outcome, dict) and 'id' in outcome:
+                    all_completed.append(outcome['id'])
+                else:
+                    # Fallback for string format - use 0-indexed to match frontend parsing
+                    all_completed.append(f"lo{i}")
+            lesson.outcomes_completed = json.dumps(all_completed)
+    except json.JSONDecodeError:
+        pass
+
     # Log lesson completed activity
     await ActivityService.log_lesson_completed(
         db=db,
         user_id=current_user.id,
         lesson_id=lesson.id,
         lesson_title=lesson.title,
+        document_id=lesson.document_id,
     )
 
     await db.flush()
@@ -396,6 +415,8 @@ async def reset_lesson_progress(
     lesson.progress_percentage = 0.0
     lesson.audio_position = 0
     lesson.completed_at = None
+    # Reset all learning outcomes
+    lesson.outcomes_completed = json.dumps([])
 
     await db.flush()
     await db.refresh(lesson)
@@ -474,7 +495,7 @@ async def update_lesson_outcome(
     try:
         outcomes = json.loads(lesson.learning_outcomes or "[]")
         if outcomes:
-            lesson.progress_percentage = (len(completed) / len(outcomes)) * 100
+            lesson.progress_percentage = min((len(completed) / len(outcomes)) * 100, 100.0)
             # Auto-complete lesson if all outcomes are done
             if len(completed) >= len(outcomes) and not lesson.is_completed:
                 lesson.is_completed = True
@@ -485,6 +506,7 @@ async def update_lesson_outcome(
                     user_id=current_user.id,
                     lesson_id=lesson.id,
                     lesson_title=lesson.title,
+                    document_id=lesson.document_id,
                 )
     except json.JSONDecodeError:
         pass

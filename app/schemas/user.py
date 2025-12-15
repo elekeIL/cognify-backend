@@ -66,11 +66,24 @@ class PasswordChange(BaseModel):
 
 
 class PasswordReset(BaseModel):
-    """Schema for password reset request."""
+    """Schema for password reset request (Step 1: Request OTP)."""
     email: EmailStr
 
 
+class PasswordResetVerifyOTP(BaseModel):
+    """Schema for OTP verification (Step 2: Verify OTP)."""
+    email: EmailStr
+    otp: str = Field(min_length=6, max_length=6, pattern=r"^\d{6}$")
+
+
 class PasswordResetConfirm(BaseModel):
-    """Schema for password reset confirmation."""
-    token: str
+    """Schema for password reset confirmation (Step 3: Set new password)."""
+    email: EmailStr
+    reset_token: str = Field(min_length=32)
     new_password: str = Field(min_length=8, max_length=100)
+
+
+class OTPVerifyResponse(BaseModel):
+    """Response after successful OTP verification."""
+    message: str
+    reset_token: str  # One-time token for password reset

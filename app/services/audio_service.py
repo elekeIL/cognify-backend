@@ -2,12 +2,14 @@
 
 import asyncio
 import logging
+import os
+import time
 import uuid
 from pathlib import Path
 from typing import Optional, Tuple
 
 from gtts import gTTS
-from pydub import AudioSegment
+from mutagen.mp3 import MP3
 
 from app.core.config import get_settings
 from app.services.storage_service import get_storage_service
@@ -51,26 +53,32 @@ class AudioService:
         last_error = None
         for attempt in range(MAX_RETRIES):
             try:
+                start_total = time.time()
                 logger.info(f"Generating audio ({len(text)} chars) - attempt {attempt + 1}/{MAX_RETRIES}")
 
-                # Generate audio in thread pool (gTTS is synchronous)
+                # Step 1: Generate audio via gTTS
+                start = time.time()
                 await self._generate_gtts(text, str(local_file_path), lang, tld)
+                logger.info(f"[TIMING] gTTS generation: {time.time() - start:.2f}s")
 
-                # Get duration before potentially uploading
+                # Step 2: Get duration (fast method using mutagen)
+                start = time.time()
                 duration = await self._get_duration(str(local_file_path))
-                logger.info(f"Audio generated: {filename} ({duration:.1f}s)")
+                logger.info(f"[TIMING] Duration calc: {time.time() - start:.2f}s")
 
-                # Upload to cloud storage (or keep local path)
+                # Step 3: Upload to cloud storage
+                start = time.time()
                 success, url_or_path = await self.storage.upload_file(
                     str(local_file_path),
                     f"audio/{filename}",
                     content_type="audio/mpeg"
                 )
+                logger.info(f"[TIMING] R2 upload: {time.time() - start:.2f}s")
+                logger.info(f"[TIMING] Total audio pipeline: {time.time() - start_total:.2f}s")
 
                 if success:
                     return url_or_path, duration
                 else:
-                    # Fallback to local path if upload fails
                     logger.warning("Cloud upload failed, using local storage")
                     return str(local_file_path), duration
 
@@ -94,15 +102,20 @@ class AudioService:
         await asyncio.to_thread(sync_generate)
 
     async def _get_duration(self, file_path: str) -> int:
-        """Get audio duration in whole seconds using pydub."""
-        def load():
+        """Get audio duration in whole seconds using mutagen (fast, no decoding)."""
+        def get_duration_fast():
             try:
-                audio = AudioSegment.from_mp3(file_path)
-                return round(len(audio) / 1000.0)  # Round to nearest whole second
+                audio = MP3(file_path)
+                return round(audio.info.length)
             except Exception:
-                return 0
+                # Fallback: estimate from file size (~16kbps for gTTS)
+                try:
+                    size_bytes = os.path.getsize(file_path)
+                    return round(size_bytes / 2000)  # Rough estimate
+                except Exception:
+                    return 0
 
-        return await asyncio.to_thread(load)
+        return await asyncio.to_thread(get_duration_fast)
 
     async def delete_audio(self, file_path_or_url: str) -> bool:
         """Delete an audio file from storage (cloud or local)."""
