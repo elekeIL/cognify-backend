@@ -1,13 +1,17 @@
 """Document management endpoints."""
 
+import logging
 import math
 import os
+import time
 from typing import Optional
 
 from fastapi import APIRouter, HTTPException, UploadFile, File, Form, status
 from fastapi.responses import FileResponse
 
 from app.core.config import get_settings
+
+logger = logging.getLogger(__name__)
 from app.core.dependencies import DbSession, CurrentUser
 from app.models.document import DocumentStatus
 from app.schemas.theme import ThemeResponse
@@ -44,6 +48,8 @@ async def upload_document(
     - POST /documents/{id}/process/extract-citations
     - POST /documents/{id}/process/generate-audio
     """
+    start_total = time.time()
+
     # Validate file extension
     if not FileProcessor.validate_file_extension(
         file.filename, settings.allowed_extensions_list
@@ -54,7 +60,9 @@ async def upload_document(
         )
 
     # Read file content
+    start = time.time()
     file_content = await file.read()
+    logger.info(f"[TIMING] File read from request: {time.time() - start:.2f}s ({len(file_content)/1024:.1f}KB)")
 
     # Check file size
     if len(file_content) > settings.max_file_size_bytes:
@@ -72,10 +80,8 @@ async def upload_document(
         title=title,
     )
 
-    # Note: Processing is no longer automatic.
-    # Frontend should call the step-by-step processing endpoints.
-
     # Log document upload activity
+    start = time.time()
     await ActivityService.log_document_uploaded(
         db=db,
         user_id=current_user.id,
@@ -83,6 +89,8 @@ async def upload_document(
         document_title=document.title,
     )
     await db.commit()
+    logger.info(f"[TIMING] Activity log + commit: {time.time() - start:.2f}s")
+    logger.info(f"[TIMING] Total endpoint: {time.time() - start_total:.2f}s")
 
     return DocumentResponse(
         id=document.id,

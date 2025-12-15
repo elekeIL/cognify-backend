@@ -3,10 +3,12 @@
 import json
 import logging
 import os
+import time
 import uuid
 from datetime import datetime, timezone
 from typing import List, Optional
 
+import aiofiles
 from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
@@ -58,18 +60,23 @@ class DocumentService:
         Returns:
             Created document
         """
+        start_total = time.time()
+
         # Validate file type
         file_type = FileProcessor.get_file_type(file_name)
 
-        # Save file to disk
+        # Save file to disk (async)
         file_id = uuid.uuid4().hex[:12]
         safe_filename = f"{file_id}_{file_name}"
         file_path = os.path.join(self.upload_dir, safe_filename)
 
-        with open(file_path, "wb") as f:
-            f.write(file_content)
+        start = time.time()
+        async with aiofiles.open(file_path, "wb") as f:
+            await f.write(file_content)
+        logger.info(f"[TIMING] File write: {time.time() - start:.2f}s ({len(file_content)/1024:.1f}KB)")
 
         # Create document record
+        start = time.time()
         document = Document(
             user_id=user_id,
             title=title or self._generate_title_from_filename(file_name),
@@ -83,6 +90,8 @@ class DocumentService:
         db.add(document)
         await db.flush()
         await db.refresh(document)
+        logger.info(f"[TIMING] DB insert: {time.time() - start:.2f}s")
+        logger.info(f"[TIMING] Total upload: {time.time() - start_total:.2f}s")
 
         return document
 
